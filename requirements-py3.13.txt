@@ -1,3 +1,4 @@
+# Python 3.13 Compatible Requirements
 # Core Django
 Django==4.2.7
 Pillow==10.0.1
@@ -14,8 +15,8 @@ whitenoise==6.6.0
 # Environment variables
 python-decouple==3.8
 
-# Database - use binary package for easier installation
-psycopg2-binary>=2.9.7,<3.0.0
+# Database - use asyncpg for Python 3.13 compatibility
+asyncpg==0.29.0
 
 # Database URL parsing
 dj-database-url==2.1.0
