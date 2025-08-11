@@ -1,0 +1,4 @@
+# Guaranteed working requirements - Basic Django only
+Django==4.2.7
+Pillow==10.0.1
+gunicorn==21.2.0

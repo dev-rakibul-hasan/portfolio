@@ -29,8 +29,10 @@ python -m pip install wheel setuptools
 # Try to install dependencies with different approaches
 echo "📥 Installing dependencies..."
 
-# First try: Ultra-minimal requirements (most compatible)
-if python -m pip install -r requirements-ultra-minimal.txt; then
+# First try: Essential requirements (all necessary packages)
+if python -m pip install -r requirements-essential.txt; then
+    echo "✅ Essential requirements installed successfully"
+elif python -m pip install -r requirements-ultra-minimal.txt; then
     echo "✅ Ultra-minimal requirements installed successfully"
 elif python -m pip install -r requirements-minimal.txt; then
     echo "✅ Minimal requirements installed successfully"
@@ -40,16 +42,32 @@ elif python -m pip install -r requirements-simple.txt; then
     echo "✅ Simple requirements installed successfully"
 elif python -m pip install -r requirements.txt; then
     echo "✅ Standard requirements installed successfully"
+elif python -m pip install -r requirements-guaranteed.txt; then
+    echo "✅ Guaranteed requirements installed successfully"
 else
     echo "⚠️  Trying minimal installation..."
-    python -m pip install Django==4.2.7 Pillow gunicorn whitenoise
+    python -m pip install Django==4.2.7 Pillow gunicorn
 fi
+
+# Try to install additional packages if needed
+echo "🔧 Installing additional packages..."
+python -m pip install python-decouple dj-database-url || echo "⚠️  Some packages not available"
 
 # Try to install database driver (optional for now)
 echo "🗄️  Installing database driver..."
 if ! python -c "import psycopg2" 2>/dev/null; then
     echo "⚠️  psycopg2 not available, trying alternatives..."
     python -m pip install psycopg2-binary==2.9.7 || python -m pip install psycopg2-binary==2.9.6 || echo "⚠️  Database driver not available - will use SQLite"
+fi
+
+# Check if we can import decouple, if not use fallback settings
+echo "🔍 Checking package availability..."
+if python -c "import decouple" 2>/dev/null; then
+    echo "✅ python-decouple available, using main settings"
+    export DJANGO_SETTINGS_MODULE=portfolio_site.settings
+else
+    echo "⚠️  python-decouple not available, using fallback settings"
+    export DJANGO_SETTINGS_MODULE=portfolio_site.settings_render
 fi
 
 # Collect static files
