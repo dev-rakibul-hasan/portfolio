@@ -1,0 +1,125 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}About | Portfolio{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Hero Section -->
+    <div class="text-center mb-16 animate-fade-in">
+        <h1 class="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+            {{ about.hero_title|default:"About Me" }}
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            {{ about.hero_subtitle|default:"I am an ethical hacker, programmer, and developer passionate about building secure and scalable applications. I love learning new technologies and solving challenging problems that make a real impact." }}
+        </p>
+    </div>
+
+    <!-- Bio Section -->
+    <div class="grid lg:grid-cols-2 gap-12 mb-16">
+        <div class="space-y-6">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ about.journey_title|default:"My Journey" }}</h2>
+            <div class="space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed">
+                <p>
+                    {{ about.journey_content|default:"I am a Computer Science and Engineering student passionate about ethical hacking, web security, and backend development." }}
+                </p>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">{{ about.quick_facts_title|default:"Quick Facts" }}</h3>
+            <div class="space-y-4">
+                {% if about and about.get_facts_list %}
+                    {% for fact in about.get_facts_list %}
+                    <div class="flex items-center space-x-3">
+                        <div class="w-3 h-3 {% cycle 'bg-blue-500' 'bg-purple-500' 'bg-green-500' 'bg-red-500' %} rounded-full"></div>
+                        <span class="text-gray-700 dark:text-gray-300">{{ fact }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- No facts available -->
+                    <div class="text-center py-4">
+                        <p class="text-gray-500 dark:text-gray-400">No quick facts available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Section -->
+    <div class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">{{ about.skills_title|default:"Technical Skills" }}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for skill in skills %}
+            <div class="group bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ skill.name }}</h3>
+                    <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+                        {{ skill.level }}
+                    </span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500" 
+                         style="width: {% if skill.level == 'Expert' %}90%{% elif skill.level == 'Advanced' %}75%{% elif skill.level == 'Intermediate' %}60%{% else %}40%{% endif %}">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Experience Timeline -->
+    <div class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">{{ about.experience_title|default:"Experience" }}</h2>
+        <div class="space-y-8">
+            {% for experience in profile.experiences.all %}
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 w-12 h-12 {% cycle 'bg-blue-500' 'bg-purple-500' %} rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ experience.title }}</h3>
+                    <p class="text-blue-600 dark:text-blue-400 font-medium">{{ experience.company }} • {{ experience.duration_display }}</p>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">
+                        {{ experience.description }}
+                    </p>
+                </div>
+            </div>
+            {% empty %}
+            <!-- No experience entries found -->
+            <div class="text-center py-8">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8z"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 text-lg">No experience entries found</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Achievements Preview -->
+    <div class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">Achievements & Awards</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for achievement in achievements_preview %}
+            <div class="rounded-xl p-6 shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                <h3 class="font-semibold text-gray-900 dark:text-white">{{ achievement.title }}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">{{ achievement.organization }}</p>
+                <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">{{ achievement.description|truncatewords:20 }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">{{ achievement.date|date:"M Y" }}</p>
+            </div>
+            {% empty %}
+            <p class="text-center text-gray-500 dark:text-gray-400 col-span-full">No achievements added yet.</p>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-6">
+            <a href="{% url 'achievements' %}" class="inline-flex items-center px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-200">View All Achievements
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

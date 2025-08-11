@@ -1,0 +1,115 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}Certifications | Portfolio{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-fade-in">
+        <h1 class="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+            Certifications
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Professional certifications that validate my expertise in cybersecurity, development, and technology.
+        </p>
+    </div>
+
+    <!-- Certifications Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for cert in certifications %}
+        <div class="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <!-- Certificate Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Verified</span>
+                </div>
+            </div>
+            
+            <!-- Certificate Image Preview -->
+            {% if cert.certificate_image %}
+            <div class="relative overflow-hidden" style="min-height: 200px;">
+                <img src="{{ cert.certificate_image.url }}" 
+                     alt="{{ cert.title }} Certificate" 
+                     class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
+            </div>
+            {% else %}
+            <div class="bg-gray-200 dark:bg-gray-700 h-48 flex items-center justify-center">
+                <div class="text-center">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="text-gray-500 dark:text-gray-400 text-sm">No Image Available</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Certificate Content -->
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                    {{ cert.title }}
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4 font-medium">
+                    {{ cert.organization }}
+                </p>
+                
+                <!-- Issue Date -->
+                <div class="flex items-center space-x-2 mb-4">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                        Issued: {{ cert.issue_date }}
+                    </span>
+                </div>
+                
+                <!-- Status Badge -->
+                <div class="flex items-center justify-between">
+                    <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm font-medium">
+                        Active
+                    </span>
+                    <div class="flex space-x-2">
+                        {% if cert.verification_url %}
+                        <a href="{{ cert.verification_url }}" target="_blank" rel="noopener noreferrer" 
+                           class="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                           title="Verify Certificate">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                            </svg>
+                        </a>
+                        {% endif %}
+                        {% if cert.certificate_image %}
+                        <a href="{{ cert.certificate_image.url }}" target="_blank" rel="noopener noreferrer"
+                           class="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                           title="View Full Size">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mt-16">
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8">
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                Continuously Learning
+            </h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
+                I'm always expanding my knowledge and skills through new certifications and training programs 
+                to stay current with the latest technologies and security practices.
+            </p>
+            <a href="/contact/" 
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                Get In Touch
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

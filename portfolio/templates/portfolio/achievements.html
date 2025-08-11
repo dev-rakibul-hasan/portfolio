@@ -1,0 +1,53 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}Achievements & Awards{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    <div class="text-center mb-10">
+        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">Achievements & Awards</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-2">A collection of recognitions, awards, and notable accomplishments</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for achievement in achievements %}
+        <div class="rounded-xl p-6 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="font-semibold text-gray-900 dark:text-white">{{ achievement.title }}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ achievement.organization }}</p>
+                </div>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">{{ achievement.description }}</p>
+            <div class="mt-3 flex items-center justify-between text-sm">
+                <span class="text-gray-500 dark:text-gray-400">{{ achievement.date|date:"M Y" }}</span>
+                {% if achievement.url %}
+                <a href="{{ achievement.url }}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Verify</a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-16">
+            <p class="text-gray-500 dark:text-gray-400">No achievements added yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if achievements.has_other_pages %}
+    <div class="flex justify-center mt-8">
+        <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            {% if achievements.has_previous %}
+            <a href="?page={{ achievements.previous_page_number }}" class="px-3 py-2 rounded-l-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50">Previous</a>
+            {% endif %}
+            <span class="px-3 py-2 border-t border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">Page {{ achievements.number }} of {{ achievements.paginator.num_pages }}</span>
+            {% if achievements.has_next %}
+            <a href="?page={{ achievements.next_page_number }}" class="px-3 py-2 rounded-r-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50">Next</a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

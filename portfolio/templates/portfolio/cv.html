@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile.name|default:"Md. Rakibul Hasan" }} - Resume</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+        .resume-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: #fff;
+            display: grid;
+            grid-template-columns: 35% 65%;
+            box-shadow: 0 4px 8px rgba(0,0,0,.1);
+        }
+        .left {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 30px;
+            text-align: justify;
+        }
+        .left h2 {
+            font-size: 18px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .left p, .left li {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: block;
+            margin: 0 auto 20px;
+            object-fit: cover;
+            border: 3px solid #fff;
+        }
+        .right {
+            padding: 30px;
+            text-align: justify;
+        }
+        .right h1 {
+            font-size: 30px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        .right h3 {
+            margin-top: 15px;
+            color: #333;
+            text-align: left;
+        }
+        .right h2 {
+            font-size: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .right p, .right li {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+        ul {
+            margin: 8px 0 0 20px;
+        }
+        a {
+            color: #4dabf7;
+            text-decoration: none;
+        }
+        .cv-actions {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 0 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #4dabf7;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #339af0;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .cv-actions { display: none; }
+            .resume-container { box-shadow: none; margin: 0; }
+        }
+        @media (max-width: 768px) {
+            .resume-container {
+                grid-template-columns: 1fr;
+                margin: 10px;
+            }
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cv-actions">
+        <a href="/" class="btn btn-secondary">← Back to Portfolio</a>
+        <a href="#" onclick="window.print()" class="btn btn-primary">📄 Download CV</a>
+    </div>
+
+    <div class="resume-container">
+        <!-- Left Column -->
+        <div class="left">
+            <!-- Profile Photo -->
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" alt="Profile Photo" class="profile-img">
+            {% else %}
+                <img src="https://via.placeholder.com/120x120/2d2d2d/ffffff?text=Photo" alt="Profile Photo" class="profile-img">
+            {% endif %}
+
+            <h2>CONTACT</h2>
+            <p>📞 {{ profile.phone|default:"+8801309598979" }}</p>
+            <p>✉️ {{ profile.email|default:"pentester.rakib@gmail.com" }}</p>
+            <p>📱 <a href="https://wa.me/{{ profile.whatsapp|default:'8801309598979' }}" target="_blank">{{ profile.whatsapp|default:"+8801309598979" }}</a></p>
+            <p><a href="{{ profile.linkedin_url|default:'https://www.linkedin.com/in/dev-rakibul-hasan/' }}">🔗 linkedin.com/in/dev-rakibul-hasan</a></p>
+            <p><a href="{{ profile.x_url|default:'https://x.com/PentesterRakib' }}" target="_blank">🐦 x.com/PentesterRakib</a></p>
+            <p>📍 {{ profile.location|default:"Rangpur, Bangladesh" }}</p>
+
+            <h2>EDUCATION</h2>
+            {% for edu in profile.education.all %}
+                <p><strong>{{ edu.degree }}</strong><br>{{ edu.institution }}{% if edu.location %}, {{ edu.location }}{% endif %}<br>{{ edu.duration_display }}</p>
+                {% if edu.description or edu.achievements %}
+                    <p class="education-details">{{ edu.description }}{% if edu.achievements %}<br><em>{{ edu.achievements }}</em>{% endif %}</p>
+                {% endif %}
+            {% empty %}
+                <p><strong>BSc in Computer Science and Engineering</strong><br>Begum Rokeya University, Rangpur<br>2023 – Present</p>
+            {% endfor %}
+
+            <h2>TECHNICAL SKILLS</h2>
+            <ul>
+                {% for skill in skills %}
+                    <li>{{ skill.name }}</li>
+                {% empty %}
+                    <li>Cybersecurity & Ethical Hacking</li>
+                    <li>Penetration Testing</li>
+                    <li>C and C++</li>
+                    <li>Python Programming</li>
+                    <li>Scripting & Automation with Python</li>
+                    <li>Kali Linux, Burp Suite</li>
+                {% endfor %}
+            </ul>
+
+            <h2>CERTIFICATIONS</h2>
+            <ul>
+                {% for cert in certifications %}
+                    <li>{{ cert.title }} - {{ cert.issue_date.year }} ({{ cert.organization }})</li>
+                {% empty %}
+                    <li>Learn Ethical Hacking From Scratch - 2024 (Udemy, zSecurity)</li>
+                    <li>Learn Python and Ethical Hacking From Scratch - 2024 (Udemy, zSecurity)</li>
+                    <li>Penetration Testing - 2024 (Udemy, zSecurity)</li>
+                    <li>Ethical Hacking for Professionals - 2025 (Byte Capsule)</li>
+                {% endfor %}
+            </ul>
+
+            <h2>LANGUAGES</h2>
+            {% for lang in profile.languages.all %}
+                <p>{{ lang.name }} – {{ lang.get_proficiency_display }}{% if lang.description %}<br><em>{{ lang.description }}</em>{% endif %}</p>
+            {% empty %}
+                <p>Bangla – Native<br>English – Professional Proficiency</p>
+            {% endfor %}
+        </div>
+
+        <!-- Right Column -->
+        <div class="right">
+            <h1>{{ profile.name|upper|default:"MD. RAKIBUL HASAN" }}</h1>
+            <p><em>{{ profile.title|default:"Cyber Security Specialist | Ethical Hacker | Penetration Tester" }}</em></p>
+
+            <h2>SUMMARY</h2>
+            <p>{{ profile.about|default:"Passionate cybersecurity professional with expertise in ethical hacking, penetration testing and web application security. Skilled in automating security scans, vulnerability detection and system hardening. Proven ability to identify and mitigate real-world threats effectively." }}</p>
+
+            <h2>ACHIEVEMENTS & AWARDS</h2>
+            {% for achievement in profile.achievements.all %}
+                <h3>{{ achievement.title }}</h3>
+                <p><em>{{ achievement.organization|default:achievement.get_achievement_type_display }} | {{ achievement.date|date:"F Y" }}</em></p>
+                <p>{{ achievement.description }}</p>
+                {% if achievement.url %}
+                    <p><a href="{{ achievement.url }}" target="_blank">View Details</a></p>
+                {% endif %}
+            {% empty %}
+                <h3>Vulnerability Detector – Project</h3>
+                <p><em>Begum Rokeya University | BRUR_CSE_FEST 2024</em></p>
+                <ul>
+                    <li>Developed Python-based scanner for SQLi, LFI and XSS vulnerabilities.</li>
+                    <li>Automated detection using Sqlmap, whois, and custom scripts.</li>
+                    <li>Designed dashboard for displaying reports and mitigation steps.</li>
+                    <li>Reduced detection time by 40% through automation.</li>
+                </ul>
+            {% endfor %}
+
+            <h2>KEY PROJECTS</h2>
+            <ul>
+                {% for project in projects %}
+                    <li><strong>{{ project.title }}:</strong> {{ project.description|striptags|truncatewords:15 }}</li>
+                {% empty %}
+                    <li><strong>Keylogger with Email Reporting:</strong> Python-based keylogger with Gmail log delivery.</li>
+                    <li><strong>Reverse Backdoor:</strong> Remote control system using Python.</li>
+                    <li><strong>XSS Vulnerability Detector:</strong> Automated web vulnerability scanner.</li>
+                    <li><strong>ARP Spoof Detector:</strong> Detects ARP spoofing attacks using Scapy.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="cv-actions">
+        <a href="/" class="btn btn-secondary">← Back to Portfolio</a>
+        <a href="#" onclick="window.print()" class="btn btn-primary">📄 Download CV</a>
+    </div>
+</body>
+</html>
+
