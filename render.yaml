@@ -8,17 +8,9 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
-      - key: PYTHONPATH
-        value: /opt/render/project/src
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
         value: false
       - key: ALLOWED_HOSTS
         value: .onrender.com
-    buildFilter:
-      paths:
-        - requirements-minimal.txt
-        - build.sh
-        - runtime.txt
-        - .python-version

@@ -1,0 +1,5 @@
+# Ultra-minimal requirements - Maximum compatibility
+Django==4.2.7
+Pillow==10.0.1
+gunicorn==21.2.0
+whitenoise==6.6.0
