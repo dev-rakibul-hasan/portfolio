@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: portfolio-website
+    env: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn portfolio_site.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
