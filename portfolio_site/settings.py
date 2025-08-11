@@ -12,12 +12,24 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from decouple import config
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Try to import optional packages, fall back gracefully if not available
+try:
+    from decouple import config
+    DECOUPLE_AVAILABLE = True
+except ImportError:
+    DECOUPLE_AVAILABLE = False
+    def config(key, default=None, cast=None):
+        return default
+
+try:
+    import dj_database_url
+    DJ_DATABASE_URL_AVAILABLE = True
+except ImportError:
+    DJ_DATABASE_URL_AVAILABLE = False
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -26,13 +38,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-5wp1*svac6^gtp_f2-=q1$rg8@m*wo1g!y_nib@w_cd_z)9^5m')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.render.com', cast=lambda v: [s.strip() for s in v.split(',')])
 
-
-# Application definition
-
+# Application definition - Include apps conditionally
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,13 +51,32 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'portfolio',
-    'rest_framework',
-    'admin_interface',
-    'colorfield',
-    'ckeditor',
-    'ckeditor_uploader',
-    'import_export',
 ]
+
+# Add optional apps if available
+try:
+    import rest_framework
+    INSTALLED_APPS.append('rest_framework')
+except ImportError:
+    pass
+
+try:
+    import admin_interface
+    INSTALLED_APPS.extend(['admin_interface', 'colorfield'])
+except ImportError:
+    pass
+
+try:
+    import ckeditor
+    INSTALLED_APPS.extend(['ckeditor', 'ckeditor_uploader'])
+except ImportError:
+    pass
+
+try:
+    import import_export
+    INSTALLED_APPS.append('import_export')
+except ImportError:
+    pass
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,10 +114,19 @@ WSGI_APPLICATION = 'portfolio_site.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # Use PostgreSQL in production, SQLite in development
-if config('DATABASE_URL', default=''):
-    DATABASES = {
-        'default': dj_database_url.parse(config('DATABASE_URL'))
-    }
+if DJ_DATABASE_URL_AVAILABLE and config('DATABASE_URL', default=''):
+    try:
+        DATABASES = {
+            'default': dj_database_url.parse(config('DATABASE_URL'))
+        }
+    except Exception:
+        # Fall back to SQLite if there's an error parsing DATABASE_URL
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 else:
     DATABASES = {
         'default': {
@@ -160,45 +198,47 @@ DEFAULT_TO_EMAIL = 'pentester.rakib@gmail.com'
 # 3. Replace 'your-app-password' above with the generated App Password
 # 4. Never use your regular Gmail password here
 
-# CKEditor Configuration
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_IMAGE_BACKEND = "pillow"
-CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'
+# CKEditor Configuration (only if available)
+if 'ckeditor' in INSTALLED_APPS:
+    CKEDITOR_UPLOAD_PATH = "uploads/"
+    CKEDITOR_IMAGE_BACKEND = "pillow"
+    CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'
 
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'height': 400,
-        'width': '100%',
-        'extraPlugins': 'codesnippet',
-        'codeSnippet_theme': 'default',
-        'toolbar_Custom': [
-            {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
-            {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
-            {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
-            {'name': 'forms',
-             'items': ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
-                       'HiddenField']},
-            '/',
-            {'name': 'basicstyles',
-             'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-            {'name': 'paragraph',
-             'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-',
-                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl',
-                       'Language']},
-            {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
-            {'name': 'insert',
-             'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe', 'CodeSnippet']},
-            '/',
-            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
-            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
-            {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
-        ],
-    },
-}
+    CKEDITOR_CONFIGS = {
+        'default': {
+            'toolbar': 'full',
+            'height': 400,
+            'width': '100%',
+            'extraPlugins': 'codesnippet',
+            'codeSnippet_theme': 'default',
+            'toolbar_Custom': [
+                {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
+                {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
+                {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
+                {'name': 'forms',
+                 'items': ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton',
+                           'HiddenField']},
+                '/',
+                {'name': 'basicstyles',
+                 'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
+                {'name': 'paragraph',
+                 'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-',
+                           'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl',
+                           'Language']},
+                {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
+                {'name': 'insert',
+                 'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe', 'CodeSnippet']},
+                '/',
+                {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
+                {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+                {'name': 'tools', 'items': ['Maximize', 'ShowBlocks']},
+            ],
+        },
+    }
 
-# Import/Export Configuration
-IMPORT_EXPORT_USE_TRANSACTIONS = True
+# Import/Export Configuration (only if available)
+if 'import_export' in INSTALLED_APPS:
+    IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 # Production Settings
 if not DEBUG:
@@ -210,11 +250,14 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = 'DENY'
     
-    # Static files configuration for production
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    
-    # Add whitenoise middleware for static files
-    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    # Static files configuration for production (only if whitenoise available)
+    try:
+        import whitenoise
+        STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        # Add whitenoise middleware for static files
+        MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    except ImportError:
+        pass
     
     # Email configuration for production (use environment variables)
     EMAIL_HOST_USER = config('EMAIL_HOST_USER', default=EMAIL_HOST_USER)
