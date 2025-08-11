@@ -29,8 +29,10 @@ python -m pip install wheel setuptools
 # Try to install dependencies with different approaches
 echo "📥 Installing dependencies..."
 
-# First try: Essential requirements (all necessary packages)
-if python -m pip install -r requirements-essential.txt; then
+# First try: Complete requirements (all packages)
+if python -m pip install -r requirements-complete.txt; then
+    echo "✅ Complete requirements installed successfully"
+elif python -m pip install -r requirements-essential.txt; then
     echo "✅ Essential requirements installed successfully"
 elif python -m pip install -r requirements-ultra-minimal.txt; then
     echo "✅ Ultra-minimal requirements installed successfully"
@@ -51,7 +53,7 @@ fi
 
 # Try to install additional packages if needed
 echo "🔧 Installing additional packages..."
-python -m pip install python-decouple dj-database-url || echo "⚠️  Some packages not available"
+python -m pip install python-decouple dj-database-url djangorestframework django-import-export django-admin-interface django-colorfield django-ckeditor || echo "⚠️  Some packages not available"
 
 # Try to install database driver (optional for now)
 echo "🗄️  Installing database driver..."
@@ -60,14 +62,17 @@ if ! python -c "import psycopg2" 2>/dev/null; then
     python -m pip install psycopg2-binary==2.9.7 || python -m pip install psycopg2-binary==2.9.6 || echo "⚠️  Database driver not available - will use SQLite"
 fi
 
-# Check if we can import decouple, if not use fallback settings
+# Check if we can import all required packages, if not use simplified settings
 echo "🔍 Checking package availability..."
-if python -c "import decouple" 2>/dev/null; then
-    echo "✅ python-decouple available, using main settings"
+if python -c "import decouple, rest_framework, import_export, admin_interface, colorfield, ckeditor" 2>/dev/null; then
+    echo "✅ All packages available, using main settings"
     export DJANGO_SETTINGS_MODULE=portfolio_site.settings
-else
-    echo "⚠️  python-decouple not available, using fallback settings"
+elif python -c "import decouple" 2>/dev/null; then
+    echo "⚠️  Some packages missing, using render settings"
     export DJANGO_SETTINGS_MODULE=portfolio_site.settings_render
+else
+    echo "⚠️  Using simplified settings (no external dependencies)"
+    export DJANGO_SETTINGS_MODULE=portfolio_site.settings_simple
 fi
 
 # Collect static files

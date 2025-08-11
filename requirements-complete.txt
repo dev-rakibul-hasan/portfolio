@@ -1,4 +1,4 @@
-# Essential requirements for Django portfolio - All needed packages
+# Complete requirements for Django portfolio - All packages
 Django==4.2.7
 Pillow==10.0.1
 gunicorn==21.2.0
@@ -11,3 +11,4 @@ django-import-export==3.3.4
 django-admin-interface==0.26.0
 django-colorfield==0.11.0
 django-ckeditor==6.7.0
+ckeditor_uploader==0.2.0
